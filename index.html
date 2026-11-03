@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>POS Trà Đá Vỉa Hè - Mobile</title>
     
     <!-- Tailwind CSS CDN -->
@@ -86,12 +86,12 @@
             </div>
 
             <!-- Product Quick Grid (Optimized 1-Tap) -->
-            <div class="flex-1 overflow-y-auto p-2.5 grid grid-cols-2 sm:grid-cols-3 gap-2.5 pb-24" id="pos-product-grid">
+            <div class="flex-1 overflow-y-auto p-2.5 grid grid-cols-2 sm:grid-cols-3 gap-2.5 pos-grid-bottom-space" id="pos-product-grid">
                 <!-- Dynamic product items -->
             </div>
 
             <!-- Floating Quick Bottom Action Bar -->
-            <div class="absolute bottom-16 left-0 right-0 p-3 bg-white/95 backdrop-blur-md border-t border-emerald-100 flex justify-between items-center shadow-lg z-10">
+            <div id="cart-quick-bar" class="p-3 bg-white/95 backdrop-blur-md border-t border-emerald-100 flex justify-between items-center shadow-lg z-10">
                 <div onclick="toggleCartDrawer(true)" class="cursor-pointer">
                     <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">Giỏ hàng (<span id="cart-total-count" class="text-trada-700 font-extrabold">0</span> món)</span>
                     <span id="cart-quick-total" class="text-trada-700 font-black text-xl">0đ</span>
@@ -130,7 +130,7 @@
             </div>
 
             <!-- Invoice Cards Container -->
-            <div id="invoice-list-container" class="flex-1 overflow-y-auto p-2.5 space-y-2.5 pb-20">
+            <div id="invoice-list-container" class="flex-1 overflow-y-auto p-2.5 space-y-2.5 view-bottom-space">
                 <!-- Dynamic Invoices -->
             </div>
         </section>
@@ -150,14 +150,14 @@
             </div>
 
             <!-- Product Manage List -->
-            <div id="manage-products-list" class="flex-1 overflow-y-auto p-2.5 space-y-2 pb-20">
+            <div id="manage-products-list" class="flex-1 overflow-y-auto p-2.5 space-y-2 view-bottom-space">
                 <!-- Dynamic product edit list -->
             </div>
         </section>
 
 
         <!-- ================= VIEW 4: THỐNG KÊ & CÀI ĐẶT ================= -->
-        <section id="view-stats" class="hidden h-full flex flex-col bg-emerald-950/5 p-3 overflow-y-auto space-y-3 pb-20">
+        <section id="view-stats" class="hidden h-full flex flex-col bg-emerald-950/5 p-3 overflow-y-auto space-y-3 view-bottom-space">
             <h2 class="font-extrabold text-gray-800 text-sm flex items-center gap-1.5">
                 <i class="fa-solid fa-chart-pie text-trada-600"></i> Thống Kê Doanh Thu
             </h2>
@@ -200,7 +200,7 @@
     </main>
 
     <!-- ================= BOTTOM NAVIGATION BAR ================= -->
-    <nav class="bg-white border-t border-emerald-100 flex justify-around items-center h-16 flex-none safe-area-bottom z-30 shadow-lg">
+    <nav class="mobile-bottom-nav bg-white border-t border-emerald-100 flex justify-around items-center flex-none z-30 shadow-lg">
         <button onclick="switchTab('pos')" id="nav-pos" class="flex flex-col items-center justify-center flex-1 py-1 text-trada-700 font-extrabold transition">
             <i class="fa-solid fa-mug-hot text-lg"></i>
             <span class="text-[10px] mt-0.5">Bán Hàng</span>
@@ -226,7 +226,7 @@
 
     <!-- ================= DRAWER: CART & FAST PAYMENT SLIDE-UP ================= -->
     <div id="cart-drawer" class="fixed inset-0 bg-black/60 z-40 hidden flex flex-col justify-end transition-opacity duration-300">
-        <div class="bg-white rounded-t-3xl max-h-[92vh] flex flex-col w-full overflow-hidden shadow-2xl">
+        <div class="bg-white rounded-t-3xl max-h-[92vh] flex flex-col w-full overflow-hidden shadow-2xl safe-area-bottom">
             
             <!-- Drawer Header -->
             <div class="p-3.5 border-b border-gray-200 flex justify-between items-center bg-emerald-50/50">

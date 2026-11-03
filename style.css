@@ -3,6 +3,7 @@
 * {
   -webkit-tap-highlight-color: transparent;
   user-select: none;
+  box-sizing: border-box;
 }
 
 body {
@@ -12,37 +13,64 @@ body {
 
 /* Custom Thin Scrollbar */
 ::-webkit-scrollbar {
-width: 4px;
-height: 4px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-background: #a7f3d0;
-border-radius: 4px;
+  background: #a7f3d0;
+  border-radius: 4px;
 }
 
-/* Mobile Safe Area Padding */
+/* Mobile Safe Area Handling */
 .safe-area-bottom {
-padding-bottom: env(safe-area-inset-bottom, 12px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Fixed Bottom Navigation Bar - Handles Phone Notch / Swipe Bar */
+.mobile-bottom-nav {
+  height: calc(3.8rem + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Quick Cart Bar Positioned Directly Above Bottom Nav */
+#cart-quick-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+/* Scroll padding so bottom elements won't hide last cards */
+.pos-grid-bottom-space {
+  padding-bottom: 5rem !important;
+}
+
+.view-bottom-space {
+  padding-bottom: 2rem !important;
 }
 
 /* Print Receipt Styles */
 @media print {
-body * {
-visibility: hidden;
-}
-#invoice-modal-content, #invoice-modal-content * {
-visibility: visible;
-}
-#invoice-modal-content {
-position: absolute;
-left: 0;
-top: 0;
-width: 100%;
-box-shadow: none !important;
-border: none !important;
-}
-.no-print {
-display: none !important;
-}
+  body * {
+    visibility: hidden;
+  }
+
+  #invoice-modal-content,
+  #invoice-modal-content * {
+    visibility: visible;
+  }
+
+  #invoice-modal-content {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
 }
