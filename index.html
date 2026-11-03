@@ -33,12 +33,64 @@
     <!-- Google Fonts Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
-    <!-- Custom External CSS -->
-    <link rel="stylesheet" href="style.css">
-</head>
-<body class="h-screen w-screen flex flex-col overflow-hidden text-gray-800 bg-emerald-950/5">
+    <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            box-sizing: border-box;
+        }
 
-    <!-- Top Header Mobile -->
+        /* 100dvh (Dynamic Viewport Height) khôi phục chuẩn xác 100% chiều cao thực trên mobile */
+        html, body {
+            height: 100dvh;
+            max-height: 100dvh;
+            width: 100vw;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7f5;
+        }
+
+        /* Custom Thin Scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #a7f3d0;
+            border-radius: 4px;
+        }
+
+        /* Mobile Safe Area Padding */
+        .pb-safe {
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        /* Print Receipt Styles */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #invoice-modal-content, #invoice-modal-content * {
+                visibility: visible;
+            }
+            #invoice-modal-content {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                box-shadow: none !important;
+                border: none !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="h-[100dvh] w-screen flex flex-col overflow-hidden text-gray-800 bg-emerald-950/5">
+
+    <!-- 1. TOP HEADER (Cố định - flex-none) -->
     <header class="bg-trada-700 text-white px-3.5 py-2.5 shadow-md flex justify-between items-center flex-none z-20">
         <div class="flex items-center space-x-2">
             <div class="w-9 h-9 bg-emerald-500/30 border border-emerald-300/40 rounded-xl flex items-center justify-center shadow-inner">
@@ -57,7 +109,7 @@
     </header>
 
     <!-- Editing Mode Banner Indicator -->
-    <div id="editing-banner" class="hidden bg-amber-500 text-slate-950 px-3.5 py-1.5 flex justify-between items-center text-xs font-extrabold shadow-md z-20">
+    <div id="editing-banner" class="hidden bg-amber-500 text-slate-950 px-3.5 py-1.5 flex justify-between items-center text-xs font-extrabold shadow-md flex-none z-20">
         <div class="flex items-center space-x-1.5">
             <i class="fa-solid fa-pen-to-square text-sm"></i>
             <span>ĐANG SỬA ĐƠN: <span id="editing-invoice-id" class="underline">--</span></span>
@@ -67,12 +119,12 @@
         </button>
     </div>
 
-    <!-- MAIN VIEWS CONTAINER -->
-    <main class="flex-1 overflow-hidden relative">
+    <!-- 2. MAIN VIEWS CONTAINER (Tự động dãn flex-1) -->
+    <main class="flex-1 overflow-hidden relative min-h-0">
 
         <!-- ================= VIEW 1: POS / TẠO ĐƠN NHANH ================= -->
         <section id="view-pos" class="h-full flex flex-col">
-            <!-- Search & Table Note Bar -->
+            <!-- Search & Table Note Bar (Flex-none) -->
             <div class="p-2.5 bg-white border-b border-emerald-100 flex items-center gap-2 flex-none shadow-sm">
                 <div class="relative flex-1">
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-emerald-600/60 text-xs"></i>
@@ -85,13 +137,13 @@
                 </div>
             </div>
 
-            <!-- Product Quick Grid (Optimized 1-Tap) -->
-            <div class="flex-1 overflow-y-auto p-2.5 grid grid-cols-2 sm:grid-cols-3 gap-2.5 pos-grid-bottom-space" id="pos-product-grid">
+            <!-- Product Quick Grid (Cuộn nội dung trong phần flex-1) -->
+            <div class="flex-1 overflow-y-auto p-2.5 grid grid-cols-2 sm:grid-cols-3 gap-2.5" id="pos-product-grid">
                 <!-- Dynamic product items -->
             </div>
 
-            <!-- Floating Quick Bottom Action Bar -->
-            <div id="cart-quick-bar" class="p-3 bg-white/95 backdrop-blur-md border-t border-emerald-100 flex justify-between items-center shadow-lg z-10">
+            <!-- Quick Cart Bar (Nằm ở đáy view POS, flex-none) -->
+            <div id="cart-quick-bar" class="p-3 bg-white border-t border-emerald-100 flex justify-between items-center shadow-lg flex-none z-10">
                 <div onclick="toggleCartDrawer(true)" class="cursor-pointer">
                     <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">Giỏ hàng (<span id="cart-total-count" class="text-trada-700 font-extrabold">0</span> món)</span>
                     <span id="cart-quick-total" class="text-trada-700 font-black text-xl">0đ</span>
@@ -130,7 +182,7 @@
             </div>
 
             <!-- Invoice Cards Container -->
-            <div id="invoice-list-container" class="flex-1 overflow-y-auto p-2.5 space-y-2.5 view-bottom-space">
+            <div id="invoice-list-container" class="flex-1 overflow-y-auto p-2.5 space-y-2.5">
                 <!-- Dynamic Invoices -->
             </div>
         </section>
@@ -150,42 +202,65 @@
             </div>
 
             <!-- Product Manage List -->
-            <div id="manage-products-list" class="flex-1 overflow-y-auto p-2.5 space-y-2 view-bottom-space">
+            <div id="manage-products-list" class="flex-1 overflow-y-auto p-2.5 space-y-2">
                 <!-- Dynamic product edit list -->
             </div>
         </section>
 
 
         <!-- ================= VIEW 4: THỐNG KÊ & CÀI ĐẶT ================= -->
-        <section id="view-stats" class="hidden h-full flex flex-col bg-emerald-950/5 p-3 overflow-y-auto space-y-3 view-bottom-space">
+        <section id="view-stats" class="hidden h-full flex flex-col bg-emerald-950/5 p-3 overflow-y-auto space-y-3">
             <h2 class="font-extrabold text-gray-800 text-sm flex items-center gap-1.5">
                 <i class="fa-solid fa-chart-pie text-trada-600"></i> Thống Kê Doanh Thu
             </h2>
 
+            <!-- Thống kê tổng quan -->
             <div class="grid grid-cols-2 gap-2.5">
                 <div class="bg-white p-3 rounded-2xl border border-emerald-100 shadow-sm">
                     <p class="text-[10px] font-bold text-gray-400 uppercase">Doanh thu hôm nay</p>
                     <p id="stat-today-revenue" class="text-lg font-black text-trada-700 mt-1">0đ</p>
+                    <p id="stat-today-count" class="text-[10px] text-gray-500 font-bold mt-0.5">0 đơn đã thu</p>
                 </div>
                 <div class="bg-white p-3 rounded-2xl border border-amber-100 shadow-sm">
                     <p class="text-[10px] font-bold text-gray-400 uppercase">Đang nợ / Chờ thu</p>
                     <p id="stat-pending-revenue" class="text-lg font-black text-amber-600 mt-1">0đ</p>
+                    <p id="stat-pending-count" class="text-[10px] text-amber-700 font-bold mt-0.5">0 đơn chờ</p>
                 </div>
             </div>
 
+            <!-- Tổng doanh thu lịch sử tích lũy -->
+            <div class="bg-white p-3 rounded-2xl border border-emerald-100 shadow-sm flex justify-between items-center">
+                <div>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase">Tổng doanh thu tích lũy</p>
+                    <p id="stat-total-revenue" class="text-lg font-black text-emerald-800 mt-0.5">0đ</p>
+                </div>
+                <div class="text-right">
+                    <span id="stat-paid-count" class="text-xs font-bold text-trada-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">0 đơn hoàn tất</span>
+                </div>
+            </div>
+
+            <!-- Bảng Doanh Thu Theo Từng Ngày -->
             <div class="bg-white p-3 rounded-2xl border border-emerald-100 shadow-sm space-y-2">
-                <p class="text-xs font-extrabold text-gray-700">Tổng quan bán hàng</p>
-                <div class="flex justify-between text-xs py-1 border-b">
-                    <span class="text-gray-500 font-medium">Tổng hóa đơn đã thu:</span>
-                    <span id="stat-paid-count" class="font-bold text-gray-800">0 đơn</span>
+                <div class="flex justify-between items-center pb-1 border-b border-gray-100">
+                    <h3 class="text-xs font-extrabold text-gray-800 flex items-center gap-1.5">
+                        <i class="fa-solid fa-calendar-days text-trada-600"></i> Doanh Thu Theo Từng Ngày
+                    </h3>
+                    <span class="text-[10px] font-bold text-gray-400">Đơn đã thanh toán</span>
                 </div>
-                <div class="flex justify-between text-xs py-1 border-b">
-                    <span class="text-gray-500 font-medium">Hóa đơn chờ thanh toán:</span>
-                    <span id="stat-pending-count" class="font-bold text-amber-600">0 đơn</span>
-                </div>
-                <div class="flex justify-between text-xs py-1">
-                    <span class="text-gray-500 font-medium">Tổng sản phẩm hiện có:</span>
-                    <span id="stat-product-count" class="font-bold text-trada-700">0 món</span>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="text-[10px] text-gray-400 border-b uppercase font-bold">
+                                <th class="pb-1.5 pt-1">Ngày</th>
+                                <th class="pb-1.5 pt-1 text-center">Số đơn</th>
+                                <th class="pb-1.5 pt-1 text-right">Tổng tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody id="daily-stats-tbody" class="divide-y divide-gray-100 font-medium text-gray-700">
+                            <!-- Dynamic Daily Revenue Rows -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -199,26 +274,26 @@
 
     </main>
 
-    <!-- ================= BOTTOM NAVIGATION BAR ================= -->
-    <nav class="mobile-bottom-nav bg-white border-t border-emerald-100 flex justify-around items-center flex-none z-30 shadow-lg">
+    <!-- 3. BOTTOM NAVIGATION BAR (Cố định ở đáy màn hình - flex-none + pb-safe) -->
+    <nav class="bg-white border-t border-emerald-100 flex justify-around items-center h-14 flex-none z-30 shadow-lg pb-safe">
         <button onclick="switchTab('pos')" id="nav-pos" class="flex flex-col items-center justify-center flex-1 py-1 text-trada-700 font-extrabold transition">
-            <i class="fa-solid fa-mug-hot text-lg"></i>
+            <i class="fa-solid fa-mug-hot text-base"></i>
             <span class="text-[10px] mt-0.5">Bán Hàng</span>
         </button>
 
         <button onclick="switchTab('invoices')" id="nav-invoices" class="flex flex-col items-center justify-center flex-1 py-1 text-gray-400 font-bold transition relative">
-            <i class="fa-solid fa-list-check text-lg"></i>
+            <i class="fa-solid fa-list-check text-base"></i>
             <span class="text-[10px] mt-0.5">Bàn & Đơn</span>
             <span id="nav-pending-badge" class="hidden absolute top-1 right-1/4 bg-amber-500 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-extrabold shadow">0</span>
         </button>
 
         <button onclick="switchTab('products')" id="nav-products" class="flex flex-col items-center justify-center flex-1 py-1 text-gray-400 font-bold transition">
-            <i class="fa-solid fa-utensils text-lg"></i>
+            <i class="fa-solid fa-utensils text-base"></i>
             <span class="text-[10px] mt-0.5">Thực Đơn</span>
         </button>
 
         <button onclick="switchTab('stats')" id="nav-stats" class="flex flex-col items-center justify-center flex-1 py-1 text-gray-400 font-bold transition">
-            <i class="fa-solid fa-chart-pie text-lg"></i>
+            <i class="fa-solid fa-chart-pie text-base"></i>
             <span class="text-[10px] mt-0.5">Thống Kê</span>
         </button>
     </nav>
@@ -226,10 +301,10 @@
 
     <!-- ================= DRAWER: CART & FAST PAYMENT SLIDE-UP ================= -->
     <div id="cart-drawer" class="fixed inset-0 bg-black/60 z-40 hidden flex flex-col justify-end transition-opacity duration-300">
-        <div class="bg-white rounded-t-3xl max-h-[92vh] flex flex-col w-full overflow-hidden shadow-2xl safe-area-bottom">
+        <div class="bg-white rounded-t-3xl max-h-[92dvh] flex flex-col w-full overflow-hidden shadow-2xl pb-safe">
             
             <!-- Drawer Header -->
-            <div class="p-3.5 border-b border-gray-200 flex justify-between items-center bg-emerald-50/50">
+            <div class="p-3.5 border-b border-gray-200 flex justify-between items-center bg-emerald-50/50 flex-none">
                 <div class="flex items-center space-x-2">
                     <i class="fa-solid fa-basket-shopping text-trada-600 text-lg"></i>
                     <h3 class="font-extrabold text-sm text-gray-800" id="drawer-title">Chi Tiết Đơn Hàng</h3>
@@ -243,12 +318,12 @@
             </div>
 
             <!-- Cart Items Scroll -->
-            <div id="cart-drawer-items" class="p-3 overflow-y-auto flex-1 space-y-2 max-h-[28vh]">
+            <div id="cart-drawer-items" class="p-3 overflow-y-auto flex-1 space-y-2 max-h-[25dvh]">
                 <!-- Dynamic Items -->
             </div>
 
             <!-- Payment Calculation Panel -->
-            <div class="p-3.5 border-t border-emerald-100 bg-slate-50 space-y-2.5">
+            <div class="p-3.5 border-t border-emerald-100 bg-slate-50 space-y-2.5 flex-none">
                 <!-- Table/Guest Input inside Drawer -->
                 <div class="flex justify-between items-center bg-white p-2 rounded-xl border border-gray-200">
                     <span class="text-xs font-bold text-gray-600">Tên Bàn / Ghi chú:</span>
@@ -307,9 +382,9 @@
 
     <!-- ================= MODAL: VIEW INVOICE DETAIL & PRINT ================= -->
     <div id="invoice-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-3">
-        <div id="invoice-modal-content" class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh]">
+        <div id="invoice-modal-content" class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[88dvh]">
             
-            <div class="p-3 border-b border-gray-200 flex justify-between items-center bg-gray-50 no-print">
+            <div class="p-3 border-b border-gray-200 flex justify-between items-center bg-gray-50 no-print flex-none">
                 <h3 class="font-bold text-xs text-gray-700">Phiếu Thanh Toán Trà Đá</h3>
                 <button onclick="closeInvoiceModal()" class="w-7 h-7 bg-gray-200 rounded-full flex items-center justify-center text-gray-600">
                     <i class="fa-solid fa-xmark text-sm"></i>
@@ -317,7 +392,7 @@
             </div>
 
             <!-- Receipt Print Area -->
-            <div class="p-4 overflow-y-auto space-y-3 font-mono text-xs text-gray-800">
+            <div class="p-4 overflow-y-auto space-y-3 font-mono text-xs text-gray-800 flex-1">
                 <div class="text-center space-y-1 pb-3 border-b border-dashed border-gray-300">
                     <h2 class="text-lg font-black font-sans text-trada-800">QUÁN TRÀ ĐÁ VỈA HÈ</h2>
                     <p id="modal-inv-table-note" class="text-xs font-bold text-amber-700 font-sans">Bàn: --</p>
@@ -365,7 +440,7 @@
             </div>
 
             <!-- Actions Footer -->
-            <div class="p-3 bg-gray-50 border-t border-gray-200 flex gap-2 no-print">
+            <div class="p-3 bg-gray-50 border-t border-gray-200 flex gap-2 no-print flex-none">
                 <button onclick="window.print()" class="flex-1 py-2 bg-trada-600 hover:bg-trada-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow">
                     <i class="fa-solid fa-print"></i> In Hóa Đơn
                 </button>

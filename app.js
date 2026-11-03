@@ -650,14 +650,62 @@ function renderStats() {
     const paidInvoices = invoices.filter(i => i.status === 'PAID');
     const pendingInvoices = invoices.filter(i => i.status === 'PENDING');
 
-    const totalRevenue = paidInvoices.reduce((sum, i) => sum + i.total, 0);
-    const pendingRevenue = pendingInvoices.reduce((sum, i) => sum + i.total, 0);
+    // 1. Tính Doanh Thu Hôm Nay (YYYY-MM-DD trùng với ngày hiện tại)
+    const todayStr = new Date().toISOString().split('T')[0];
+    const todayPaidInvoices = paidInvoices.filter(i => {
+        if (!i.paidAt) return false;
+        const paidDateStr = new Date(i.paidAt).toISOString().split('T')[0];
+        return paidDateStr === todayStr;
+    });
 
-    document.getElementById('stat-today-revenue').innerText = formatVND(totalRevenue);
+    const todayRevenue = todayPaidInvoices.reduce((sum, i) => sum + i.total, 0);
+    const pendingRevenue = pendingInvoices.reduce((sum, i) => sum + i.total, 0);
+    const totalAccumulatedRevenue = paidInvoices.reduce((sum, i) => sum + i.total, 0);
+
+    // Hiển thị các chỉ số tổng quan
+    document.getElementById('stat-today-revenue').innerText = formatVND(todayRevenue);
+    document.getElementById('stat-today-count').innerText = `${todayPaidInvoices.length} đơn đã thu`;
+    
     document.getElementById('stat-pending-revenue').innerText = formatVND(pendingRevenue);
-    document.getElementById('stat-paid-count').innerText = `${paidInvoices.length} đơn`;
-    document.getElementById('stat-pending-count').innerText = `${pendingInvoices.length} đơn`;
-    document.getElementById('stat-product-count').innerText = `${products.length} món`;
+    document.getElementById('stat-pending-count').innerText = `${pendingInvoices.length} đơn chờ`;
+
+    document.getElementById('stat-total-revenue').innerText = formatVND(totalAccumulatedRevenue);
+    document.getElementById('stat-paid-count').innerText = `${paidInvoices.length} đơn hoàn tất`;
+
+    // 2. Gom nhóm Doanh thu theo từng ngày (YYYY-MM-DD)
+    const dailyMap = {};
+    paidInvoices.forEach(inv => {
+        const dateKey = inv.paidAt ? new Date(inv.paidAt).toISOString().split('T')[0] : 'Không xác định';
+        if (!dailyMap[dateKey]) {
+            dailyMap[dateKey] = { count: 0, total: 0 };
+        }
+        dailyMap[dateKey].count += 1;
+        dailyMap[dateKey].total += inv.total;
+    });
+
+    // Sắp xếp ngày giảm dần (Mới nhất lên đầu)
+    const sortedDays = Object.keys(dailyMap).sort((a, b) => b.localeCompare(a));
+    const tbody = document.getElementById('daily-stats-tbody');
+    tbody.innerHTML = '';
+
+    if (sortedDays.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3" class="text-center py-4 text-gray-400 text-xs font-bold">Chưa có dữ liệu doanh thu</td></tr>`;
+        return;
+    }
+
+    sortedDays.forEach(day => {
+        const data = dailyMap[day];
+        const tr = document.createElement('tr');
+        tr.className = day === todayStr ? "bg-emerald-50/60 font-bold" : "";
+        tr.innerHTML = `
+            <td class="py-2 text-gray-800">
+                ${day === todayStr ? '<span class="text-trada-700 font-extrabold">Hôm nay</span> (' + day + ')' : day}
+            </td>
+            <td class="py-2 text-center font-bold text-gray-600">${data.count} đơn</td>
+            <td class="py-2 text-right font-black text-trada-700">${formatVND(data.total)}</td>
+        `;
+        tbody.appendChild(tr);
+    });
 }
 
 function resetDataToDefault() {

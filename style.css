@@ -1,66 +1,45 @@
 /* Reset & Touch Optimizations */
-
 * {
   -webkit-tap-highlight-color: transparent;
   user-select: none;
   box-sizing: border-box;
 }
 
-body {
+/* Sửa triệt để lỗi tràn màn hình mobile bằng 100dvh */
+html, body {
+  height: 100%;
+  height: 100dvh; /* Dynamic Viewport Height cho Mobile Chrome/Safari */
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
   font-family: 'Inter', sans-serif;
   background-color: #f4f7f5;
 }
 
-/* Custom Thin Scrollbar */
+/* Scrollbar mỏng gọn */
 ::-webkit-scrollbar {
   width: 4px;
   height: 4px;
 }
-
 ::-webkit-scrollbar-thumb {
   background: #a7f3d0;
   border-radius: 4px;
 }
 
-/* Mobile Safe Area Handling */
-.safe-area-bottom {
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-
-/* Fixed Bottom Navigation Bar - Handles Phone Notch / Swipe Bar */
+/* Safe Area Bottom cho điện thoại tràn viền */
 .mobile-bottom-nav {
-  height: calc(3.8rem + env(safe-area-inset-bottom, 0px));
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
 }
 
-/* Quick Cart Bar Positioned Directly Above Bottom Nav */
-#cart-quick-bar {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-}
-
-/* Scroll padding so bottom elements won't hide last cards */
-.pos-grid-bottom-space {
-  padding-bottom: 5rem !important;
-}
-
-.view-bottom-space {
-  padding-bottom: 2rem !important;
-}
-
-/* Print Receipt Styles */
+/* Fix in ấn */
 @media print {
   body * {
     visibility: hidden;
   }
-
-  #invoice-modal-content,
-  #invoice-modal-content * {
+  #invoice-modal-content, #invoice-modal-content * {
     visibility: visible;
   }
-
   #invoice-modal-content {
     position: absolute;
     left: 0;
@@ -69,7 +48,6 @@ body {
     box-shadow: none !important;
     border: none !important;
   }
-
   .no-print {
     display: none !important;
   }
